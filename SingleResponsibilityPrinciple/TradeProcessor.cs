@@ -12,11 +12,13 @@ namespace SingleResponsibilityPrinciple
             this.tradeStorage = tradeStorage;
         }
 
-        public void ProcessTrades()
+        public async Task ProcessTradesAsync()
         {
-            var lines = tradeDataProvider.GetTradeData();
-            var trades = tradeParser.Parse(lines);
-            tradeStorage.Persist(trades);
+            await foreach (var tradeData in tradeDataProvider.GetTradeDataAsync())
+            {
+                var trade = tradeParser.Parse(tradeData);
+                tradeStorage.Persist((IEnumerable<TradeRecord>)trade);
+            }
         }
 
         private readonly ITradeDataProvider tradeDataProvider;

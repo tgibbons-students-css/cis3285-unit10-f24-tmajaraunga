@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-
 using SingleResponsibilityPrinciple.AdoNet;
 using SingleResponsibilityPrinciple.Contracts;
 
@@ -8,7 +7,7 @@ namespace SingleResponsibilityPrinciple
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             ILogger logger = new ConsoleLogger();
             // Open up the local textfile as a stream
@@ -41,10 +40,11 @@ namespace SingleResponsibilityPrinciple
             ITradeParser tradeParser = new SimpleTradeParser(tradeValidator, tradeMapper);
             ITradeStorage tradeStorage = new AdoNetTradeStorage(logger);
 
-            TradeProcessor tradeProcessor = new TradeProcessor(adjustedProvider, tradeParser, tradeStorage);
+            TradeProcessor tradeProcessor = new TradeProcessor(asyncProvider, tradeParser, tradeStorage);
             //TradeProcessor tradeProcessor = new TradeProcessor(urlProvider, tradeParser, tradeStorage);
+            await tradeProcessor.ProcessTradesAsync();
 
-            tradeProcessor.ProcessTrades();
+            //tradeProcessor.ProcessTradesAsync();
 
             //Console.ReadKey();
 
